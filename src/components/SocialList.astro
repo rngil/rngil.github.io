@@ -1,0 +1,52 @@
+---
+import { Icon } from "astro-icon/components";
+
+const socialLinks: {
+	friendlyName: string;
+	isWebmention?: boolean;
+	link: string;
+	name: string;
+}[] = [
+	{
+		friendlyName: "GitHub",
+		link: "https://github.com/rngil",
+		name: "mdi:github",
+	},
+	{
+		friendlyName: "LinkedIn",
+		link: "https://linkedin.com/in/reneegil",
+		name: "mdi:linkedin",
+	},
+	{
+		friendlyName: "Semantic Scholar",
+		link: "https://www.semanticscholar.org/author/Renee-Gil/2313058126",
+		name: "semantic-scholar",
+	},
+	{
+		friendlyName: "Email",
+		link: "mailto:renee.gil@mailbox.org",
+		name: "mdi:email-outline",
+	},
+];
+---
+
+<div class="flex flex-wrap items-end gap-x-2">
+	<p>Find me on</p>
+	<ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
+		{
+			socialLinks.map(({ friendlyName, isWebmention, link, name }) => (
+				<li class="flex">
+					<a
+						class="hover:text-link inline-block"
+						href={link}
+						rel={`noreferrer ${isWebmention ? "me authn" : ""}`}
+						target={link.startsWith("mailto:") ? undefined : "_blank"}
+					>
+						<Icon aria-hidden="true" class="h-8 w-8" focusable="false" name={name} />
+						<span class="sr-only">{friendlyName}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</div>

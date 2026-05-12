@@ -1,0 +1,52 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+
+type Role = "Lead Developer" | "Contributor";
+
+const projects: { name: string; description: string; url: string; role: Role }[] = [
+	{
+		name: "Project Alpha",
+		description: "A high-performance numerical solver for partial differential equations.",
+		url: "https://github.com/rngil/project-alpha",
+		role: "Lead Developer",
+	},
+	{
+		name: "Project Beta",
+		description: "A parallel mesh partitioning library built for large-scale simulations.",
+		url: "https://github.com/rngil/project-beta",
+		role: "Contributor",
+	},
+];
+---
+
+<PageLayout
+	meta={{
+		title: "Open Source",
+		description: "Open source projects and contributions by Renee Gil.",
+	}}
+>
+	<h1 class="text-muted mb-4 text-xs font-semibold uppercase tracking-widest">Open Source</h1>
+	<p class="mb-10 max-w-prose">
+		A selection of open-source projects I maintain or contribute to.
+	</p>
+	<ul class="space-y-8" role="list">
+		{
+			projects.map((project) => (
+				<li class="border-border border-t pt-6">
+					<a
+						class="cactus-link text-lg font-semibold"
+						href={project.url}
+						rel="noreferrer"
+						target="_blank"
+					>
+						{project.name}
+					</a>
+					<p class="mt-1 mb-3 max-w-prose text-sm">{project.description}</p>
+					<span class="bg-quote rounded px-2 py-0.5 font-mono text-xs text-black">
+						{project.role}
+					</span>
+				</li>
+			))
+		}
+	</ul>
+</PageLayout>

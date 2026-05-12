@@ -1,0 +1,136 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+
+const AUTHOR_ID = "2313058126";
+const FIELDS = "title,year,venue,externalIds,abstract,openAccessPdf,publicationTypes";
+
+interface S2Paper {
+	paperId: string;
+	title: string;
+	year: number | null;
+	venue: string | null;
+	abstract: string | null;
+	externalIds: Record<string, string> | null;
+	openAccessPdf: { url: string } | null;
+	publicationTypes: string[] | null;
+}
+
+let papers: S2Paper[] = [];
+try {
+	const res = await fetch(
+		`https://api.semanticscholar.org/graph/v1/author/${AUTHOR_ID}/papers?fields=${FIELDS}&limit=100`,
+	);
+	if (res.ok) {
+		const json = (await res.json()) as { data: S2Paper[] };
+		papers = (json.data ?? []).sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+	}
+} catch {
+	// Fetch failed at build time — page renders without papers
+}
+
+function paperUrl(paper: S2Paper): string {
+	if (paper.openAccessPdf?.url) return paper.openAccessPdf.url;
+	if (paper.externalIds?.DOI) return `https://doi.org/${paper.externalIds.DOI}`;
+	if (paper.externalIds?.ArXiv) return `https://arxiv.org/abs/${paper.externalIds.ArXiv}`;
+	return `https://www.semanticscholar.org/paper/${paper.paperId}`;
+}
+
+function badge(paper: S2Paper): string | null {
+	if (paper.externalIds?.ArXiv) return "arXiv";
+	const types = paper.publicationTypes ?? [];
+	if (types.includes("JournalArticle")) return "Journal";
+	if (types.includes("Conference")) return "Conference";
+	if (types.includes("Preprint")) return "Preprint";
+	if (types.includes("Book")) return "Book";
+	if (types.includes("BookSection")) return "Book chapter";
+	if (types.includes("Thesis")) return "Thesis";
+	return null;
+}
+
+const lectures: { title: string; venue: string; year: number; ongoing?: boolean; url?: string }[] = [
+	{
+		title: "EPI 6101 — Course Lectures on Neural Networks",
+		venue: "University of Ottawa",
+		year: 2024,
+		ongoing: true,
+	},
+];
+
+---
+
+<PageLayout
+	meta={{
+		title: "Research & Outreach",
+		description: "Independent research in mathematics and high-performance computing.",
+	}}
+>
+	<h1 class="text-muted mb-4 text-xs font-semibold uppercase tracking-widest">Research & Outreach</h1>
+	<p class="mb-10 max-w-prose">
+		Independent research at the intersection of mathematics and high-performance computing
+		— with a focus on numerical methods for PDEs, parallel and distributed algorithms,
+		and finite element and finite volume methods.
+	</p>
+
+	<section class="mb-12">
+		<h2 class="title mb-6 text-xl">Papers & Preprints</h2>
+		{
+			papers.length === 0 ? (
+				<p class="text-muted text-sm">Papers could not be loaded at build time.</p>
+			) : (
+				<ul class="space-y-6" role="list">
+					{papers.map((paper) => {
+						const label = badge(paper);
+						return (
+							<li class="border-border border-t pt-5">
+								<a
+									class="cactus-link font-semibold"
+									href={paperUrl(paper)}
+									rel="noreferrer"
+									target="_blank"
+								>
+									{paper.title}
+								</a>
+								<div class="mt-1 flex items-center gap-x-2">
+									{label && (
+										<span class="bg-quote rounded px-1.5 py-0.5 font-mono text-xs text-black">
+											{label}
+										</span>
+									)}
+									<p class="text-muted text-sm">
+										{[paper.year, paper.venue].filter(Boolean).join(" · ")}
+									</p>
+								</div>
+							</li>
+						);
+					})}
+				</ul>
+			)
+		}
+	</section>
+
+	<section>
+		<h2 class="title mb-6 text-xl">Teaching</h2>
+		{
+			lectures.length === 0 ? (
+				<p class="text-muted text-sm">Guest lectures coming soon.</p>
+			) : (
+				<ul class="space-y-4" role="list">
+					{lectures.map((lec) => (
+						<li class="border-border border-t pt-4">
+							{lec.url ? (
+								<a class="cactus-link font-semibold" href={lec.url} rel="noreferrer" target="_blank">
+									{lec.title}
+								</a>
+							) : (
+								<span class="font-semibold">{lec.title}</span>
+							)}
+							<p class="text-muted mt-1 text-sm">
+								{[lec.ongoing ? `${lec.year} – present` : lec.year, lec.venue].join(" · ")}
+							</p>
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</section>
+</PageLayout>
