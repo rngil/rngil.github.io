@@ -5,7 +5,7 @@ export const siteConfig: SiteConfig = {
 	url: "https://rngil.github.io/",
 	title: "Renee Gil",
 	author: "Renee Gil",
-	description: "Applied mathematician & HPC engineer. FOSS contributor and independent researcher.",
+	description: "Software engineer & computational scientist. Optimization, scientific computing, and data science applied to real-world problems.",
 	lang: "en",
 	ogLocale: "en_US",
 	date: {
