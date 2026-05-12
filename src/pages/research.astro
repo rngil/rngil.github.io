@@ -15,6 +15,19 @@ interface S2Paper {
 	publicationTypes: string[] | null;
 }
 
+const manualPapers: S2Paper[] = [
+	{
+		paperId: "manual-neurips-2023-gnn",
+		title: "Graph Neural Networks for Identifying Protein-Reactive Compounds",
+		year: 2023,
+		venue: "NeurIPS 2023",
+		abstract: null,
+		externalIds: null,
+		openAccessPdf: { url: "https://neurips.cc/virtual/2023/76241" },
+		publicationTypes: ["Conference"],
+	},
+];
+
 let papers: S2Paper[] = [];
 try {
 	const res = await fetch(
@@ -22,11 +35,25 @@ try {
 	);
 	if (res.ok) {
 		const json = (await res.json()) as { data: S2Paper[] };
-		papers = (json.data ?? []).sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+		papers = json.data ?? [];
 	}
 } catch {
 	// Fetch failed at build time — page renders without papers
 }
+
+const fetchedKeys = new Set(papers.map((p) => `${p.title}::${p.year}`));
+for (const mp of manualPapers) {
+	if (!fetchedKeys.has(`${mp.title}::${mp.year}`)) papers.push(mp);
+}
+papers.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+
+const groupedMap = new Map<string, S2Paper[]>();
+for (const p of papers) {
+	const group = groupedMap.get(p.title) ?? [];
+	group.push(p);
+	groupedMap.set(p.title, group);
+}
+const paperGroups = Array.from(groupedMap.values());
 
 function paperUrl(paper: S2Paper): string {
 	if (paper.openAccessPdf?.url) return paper.openAccessPdf.url;
@@ -78,28 +105,45 @@ const lectures: { title: string; venue: string; year: number; ongoing?: boolean;
 				<p class="text-muted text-sm">Papers could not be loaded at build time.</p>
 			) : (
 				<ul class="space-y-6" role="list">
-					{papers.map((paper) => {
-						const label = badge(paper);
+					{paperGroups.map((pubs) => {
+						const single = pubs.length === 1;
+						const first = pubs[0]!;
 						return (
 							<li class="border-border border-t pt-5">
 								<a
 									class="cactus-link font-semibold"
-									href={paperUrl(paper)}
+									href={paperUrl(first)}
 									rel="noreferrer"
 									target="_blank"
 								>
-									{paper.title}
+									{first.title}
 								</a>
 								<div class="mt-1 flex items-center gap-x-2">
-									{label && (
+									{badge(first) && (
 										<span class="bg-quote rounded px-1.5 py-0.5 font-mono text-xs text-black">
-											{label}
+											{badge(first)}
 										</span>
 									)}
 									<p class="text-muted text-sm">
-										{[paper.year, paper.venue].filter(Boolean).join(" · ")}
+										{[first.year, first.venue].filter(Boolean).join(" · ")}
 									</p>
 								</div>
+								{!single && pubs.slice(1).map((pub) => {
+									const label = badge(pub);
+									return (
+										<div class="mt-1 flex items-center gap-x-2">
+											<p class="text-muted text-xs">Also presented at</p>
+											{label && (
+												<span class="bg-quote rounded px-1.5 py-0.5 font-mono text-xs text-black">
+													{label}
+												</span>
+											)}
+											<p class="text-muted text-sm">
+												{[pub.year, pub.venue].filter(Boolean).join(" · ")}
+											</p>
+										</div>
+									);
+								})}
 							</li>
 						);
 					})}
