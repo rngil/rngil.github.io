@@ -3,7 +3,21 @@ import PageLayout from "@/layouts/Base.astro";
 
 type Role = "Author" | "Contributor";
 
-const projects: { name: string; description: string; url: string; role: Role }[] = [
+interface SubProject {
+	name: string;
+	description: string;
+	url: string;
+}
+
+interface Project {
+	name: string;
+	description: string;
+	url: string;
+	role: Role;
+	children?: SubProject[];
+}
+
+const projects: Project[] = [
 	{
 		name: "InferOpt.jl",
 		description: "Combinatorial optimization layers for machine learning pipelines",
@@ -12,9 +26,41 @@ const projects: { name: string; description: string; url: string; role: Role }[]
 	},
 	{
 		name: "MoleculeHub",
-		description: "A comprehensive set of cheminformatics tools in Julia",
+		description: "A Julia cheminformatics toolkit",
 		url: "https://github.com/MoleculeHub",
 		role: "Author",
+		children: [
+			{
+				name: "MoleculeFlow.jl",
+				description: "Core cheminformatics library",
+				url: "https://github.com/MoleculeHub/MoleculeFlow.jl",
+			},
+			{
+				name: "MoleculeView.jl",
+				description: "Interactive molecular data visualization and exploration",
+				url: "https://github.com/MoleculeHub/MoleculeView.jl",
+			},
+			{
+				name: "MoleculeDatasets.jl",
+				description: "Collection of cheminformatics datasets",
+				url: "https://github.com/MoleculeHub/MoleculeDatasets.jl",
+			},
+			{
+				name: "MoleculeScreen.jl",
+				description: "Cheminformatics structural filters",
+				url: "https://github.com/MoleculeHub/MoleculeScreen.jl",
+			},
+			{
+				name: "MoleculeDock.jl",
+				description: "Molecular docking",
+				url: "https://github.com/MoleculeHub/MoleculeDock.jl",
+			},
+			{
+				name: "OpenBabel.jl",
+				description: "Julia bindings to Open Babel",
+				url: "https://github.com/MoleculeHub/OpenBabel.jl",
+			},
+		],
 	},
 ];
 ---
@@ -45,6 +91,23 @@ const projects: { name: string; description: string; url: string; role: Role }[]
 					<span class="bg-quote rounded px-2 py-0.5 font-mono text-xs text-black">
 						{project.role}
 					</span>
+					{project.children && (
+						<ul class="mt-4 space-y-3 border-l-2 border-border pl-4" role="list">
+							{project.children.map((child) => (
+								<li>
+									<a
+										class="cactus-link font-semibold"
+										href={child.url}
+										rel="noreferrer"
+										target="_blank"
+									>
+										{child.name}
+									</a>
+									<p class="text-muted text-sm">{child.description}</p>
+								</li>
+							))}
+						</ul>
+					)}
 				</li>
 			))
 		}
