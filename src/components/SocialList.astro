@@ -7,6 +7,7 @@ const socialLinks: {
 	link: string;
 	name?: string;
 	label?: string;
+	isEmail?: boolean;
 }[] = [
 	{
 		friendlyName: "GitHub",
@@ -30,22 +31,26 @@ const socialLinks: {
 	},
 	{
 		friendlyName: "Email",
-		link: "mailto:renee.gil@mailbox.org",
+		link: "#",
 		name: "mdi:email-outline",
+		isEmail: true,
 	},
 ];
+
+const emailB64 = btoa("mailto:renee.gil@mailbox.org");
 ---
 
 <div>
 	<ul class="flex items-center gap-x-2">
 		{
-			socialLinks.map(({ friendlyName, isWebmention, link, name, label }) => (
+			socialLinks.map(({ friendlyName, isWebmention, link, name, label, isEmail }) => (
 				<li class="flex">
 					<a
 						class="hover:text-link inline-block"
 						href={link}
 						rel={`noreferrer ${isWebmention ? "me authn" : ""}`}
-						target={link.startsWith("mailto:") ? undefined : "_blank"}
+						target={isEmail ? undefined : "_blank"}
+						data-mailto={isEmail ? emailB64 : undefined}
 					>
 						{label ? (
 							<span aria-hidden="true" class="flex h-8 w-8 items-center justify-center font-mono text-xl font-bold">{label}</span>
@@ -59,3 +64,9 @@ const socialLinks: {
 		}
 	</ul>
 </div>
+
+<script>
+	document.querySelectorAll<HTMLAnchorElement>("a[data-mailto]").forEach((el) => {
+		el.href = atob(el.dataset.mailto!);
+	});
+</script>
