@@ -1,14 +1,20 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 
-type Role = "Lead Developer" | "Contributor";
+type Role = "Author" | "Contributor";
 
 const projects: { name: string; description: string; url: string; role: Role }[] = [
+	{
+		name: "InferOpt.jl",
+		description: "Combinatorial optimization layers for machine learning pipelines",
+		url: "https://github.com/JuliaDecisionFocusedLearning/InferOpt.jl",
+		role: "Contributor",
+	},
 	{
 		name: "MoleculeHub",
 		description: "A comprehensive set of cheminformatics tools in Julia",
 		url: "https://github.com/MoleculeHub",
-		role: "Lead Developer",
+		role: "Author",
 	},
 ];
 ---
@@ -21,7 +27,7 @@ const projects: { name: string; description: string; url: string; role: Role }[]
 >
 	<h1 class="text-muted mb-4 text-xs font-semibold uppercase tracking-widest">Open Source</h1>
 	<p class="mb-10 max-w-prose">
-		A selection of open-source projects I maintain or contribute to
+		A selection of open-source projects I am currently working on
 	</p>
 	<ul class="space-y-8" role="list">
 		{
