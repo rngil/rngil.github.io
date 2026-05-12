@@ -5,7 +5,8 @@ const socialLinks: {
 	friendlyName: string;
 	isWebmention?: boolean;
 	link: string;
-	name: string;
+	name?: string;
+	label?: string;
 }[] = [
 	{
 		friendlyName: "GitHub",
@@ -23,6 +24,11 @@ const socialLinks: {
 		name: "semantic-scholar",
 	},
 	{
+		friendlyName: "CV",
+		link: "/cv.pdf",
+		label: "CV",
+	},
+	{
 		friendlyName: "Email",
 		link: "mailto:renee.gil@mailbox.org",
 		name: "mdi:email-outline",
@@ -33,7 +39,7 @@ const socialLinks: {
 <div>
 	<ul class="flex items-center gap-x-2">
 		{
-			socialLinks.map(({ friendlyName, isWebmention, link, name }) => (
+			socialLinks.map(({ friendlyName, isWebmention, link, name, label }) => (
 				<li class="flex">
 					<a
 						class="hover:text-link inline-block"
@@ -41,7 +47,11 @@ const socialLinks: {
 						rel={`noreferrer ${isWebmention ? "me authn" : ""}`}
 						target={link.startsWith("mailto:") ? undefined : "_blank"}
 					>
-						<Icon aria-hidden="true" class="h-8 w-8" focusable="false" name={name} />
+						{label ? (
+							<span aria-hidden="true" class="flex h-8 w-8 items-center justify-center font-mono text-xl font-bold">{label}</span>
+						) : (
+							<Icon aria-hidden="true" class="h-8 w-8" focusable="false" name={name!} />
+						)}
 						<span class="sr-only">{friendlyName}</span>
 					</a>
 				</li>
