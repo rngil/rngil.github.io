@@ -26,6 +26,16 @@ const manualPapers: S2Paper[] = [
 		openAccessPdf: { url: "https://neurips.cc/virtual/2023/76241" },
 		publicationTypes: ["Conference"],
 	},
+	{
+		paperId: "manual-gradient-ai-chemistry",
+		title: "How AI is Changing Chemical Discovery",
+		year: 2022,
+		venue: "The Gradient",
+		abstract: null,
+		externalIds: null,
+		openAccessPdf: { url: "https://thegradient.pub/how-ai-is-changing-chemical-discovery/" },
+		publicationTypes: ["Article"],
+	},
 ];
 
 let papers: S2Paper[] = [];
@@ -71,6 +81,7 @@ function badge(paper: S2Paper): string | null {
 	if (types.includes("Book")) return "Book";
 	if (types.includes("BookSection")) return "Book chapter";
 	if (types.includes("Thesis")) return "Thesis";
+	if (types.includes("Article")) return "Article";
 	return null;
 }
 
@@ -99,7 +110,7 @@ const lectures: { title: string; venue: string; year: number; ongoing?: boolean;
 	</p>
 
 	<section class="mb-12">
-		<h2 class="title mb-6 text-xl">Papers & Preprints</h2>
+		<h2 class="title mb-6 text-xl">Publications</h2>
 		{
 			papers.length === 0 ? (
 				<p class="text-muted text-sm">Papers could not be loaded at build time.</p>
